@@ -3,8 +3,8 @@ const jwt=require('jsonwebtoken');
 const userModel=require('../models/userModel.js');
 const doctorModel=require('../models/doctorModel.js');
 const cloudinary=require('cloudinary');
-const dotenv=require('dotenv').config()
-
+const dotenv=require('dotenv').config();
+const validator=require('validator');
 //admin login
 const loginAdmin = async (req, res) => {
   try {

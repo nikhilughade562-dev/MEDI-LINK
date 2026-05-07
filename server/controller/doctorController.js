@@ -3,6 +3,7 @@ const dotenv=require('dotenv').config()
 const bycrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 
+
 //get all doctor
 const doctorList = async (req, res) => {
   try {

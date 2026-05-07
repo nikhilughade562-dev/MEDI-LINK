@@ -35,7 +35,7 @@ const Navbar = () => {
       </div>
       <button
         onClick={logout}
-        className="bg-primary text-white text-sm px-10 py-2 rounded-full"
+        className="bg-blue-700 text-white text-sm px-10 py-2 rounded-full"
       >
         Logout
       </button>
