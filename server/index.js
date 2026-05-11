@@ -7,7 +7,7 @@ const userRouter=require('./routes/userRoute.js')
 const doctorRouter = require('./routes/doctorRoute.js')
 const adminRouter = require('./routes/adminRoute.js')
 const app=express()
-const PORT=process.env.PORT || 4000
+const PORT=process.env.PORT || 4000;
 
 // app config 
 connectDB();
