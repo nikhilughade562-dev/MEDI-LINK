@@ -48,6 +48,7 @@ const AdminContextProvider = (props) => {
     }
   };
 
+
   const getDashData = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/admin/dashboard", {
@@ -89,6 +90,7 @@ const AdminContextProvider = (props) => {
     backendUrl,
     doctors,
     getAllDoctors,
+    appointments,
     setAppointments,
     getAllAppointments,
     cancelAppointment,
