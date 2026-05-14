@@ -63,6 +63,7 @@ const AppContextProvider = (props) => {
     loadUserProfileData,
     doctors,
     getDoctorsData,
+    currencySymbol
   };
 
   return (

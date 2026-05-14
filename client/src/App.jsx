@@ -10,6 +10,8 @@ import Footer from "./components/Footer.jsx";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Appointment from "./pages/Appointment.jsx";
+import MyAppointments from "./pages/MyAppointments";
 
 const App = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/my-profile" element={<MyProfile />} />
+          <Route path ="/appointment/:docId" element={<Appointment />}/>
+          <Route path="/my-appointments" element={<MyAppointments />} />
         </Routes>
         <Footer />
     </div>
