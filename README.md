@@ -32,11 +32,8 @@
 
 # 🏗️ System Architecture
 
-> Add your system architecture image here
 
-```md
-![System Architecture](./system-architecture.png)
-```
+<img width="1379" height="702" alt="System Design" src="System-Architecture.png" />
 
 ---
 
