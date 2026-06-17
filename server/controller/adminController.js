@@ -6,6 +6,7 @@ const appointmentModel=require('../models/appointmentModel.js')
 const cloudinary=require('cloudinary');
 const dotenv=require('dotenv').config();
 const validator=require('validator');
+const transporter = require("../config/mailer.js");
 
 //admin login
 const loginAdmin = async (req, res) => {
@@ -94,6 +95,83 @@ const addDoctor = async (req, res) => {
     const newDoctor = new doctorModel(doctorData);
     await newDoctor.save();
 
+    // Send onboarding email
+await transporter.sendMail({
+  from: process.env.EMAIL_USER,
+  to: email,
+  subject: "Welcome to MEDILINK - Your Doctor Account is Ready",
+
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden;">
+
+      <div style="background-color: #2563eb; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin:0;">MEDILINK</h1>
+      </div>
+
+      <div style="padding:30px; color:#333;">
+        <h2>Hello Dr. ${name},</h2>
+
+        <p>
+          Congratulations! You have been successfully onboarded as a doctor on
+          <strong>MEDILINK</strong>.
+        </p>
+
+        <p>Your account has been created with the following login credentials:</p>
+
+        <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+          <tr style="background:#f8f8f8;">
+            <td style="padding:10px; font-weight:bold;">Email</td>
+            <td style="padding:10px;">${email}</td>
+          </tr>
+
+          <tr>
+            <td style="padding:10px; font-weight:bold;">Password</td>
+            <td style="padding:10px;">${password}</td>
+          </tr>
+
+          <tr style="background:#f8f8f8;">
+            <td style="padding:10px; font-weight:bold;">Speciality</td>
+            <td style="padding:10px;">${speciality}</td>
+          </tr>
+
+          <tr>
+            <td style="padding:10px; font-weight:bold;">Experience</td>
+            <td style="padding:10px;">${experience}</td>
+          </tr>
+        </table>
+
+        <p>
+          You can now log in to your MEDILINK Doctor Dashboard using the above
+          credentials.
+        </p>
+
+        <div style="background:#eff6ff; border-left:4px solid #2563eb; padding:15px; margin:20px 0;">
+          <strong>Security Recommendation:</strong><br>
+          Please change your password after your first login to keep your account secure.
+        </div>
+
+        <p>
+          We are excited to have you on board and look forward to helping you
+          provide excellent healthcare services.
+        </p>
+
+        <br>
+
+        <p>
+          Regards,<br>
+          <strong>Team MEDILINK</strong>
+        </p>
+      </div>
+
+      <div style="background:#f3f4f6; text-align:center; padding:15px; font-size:12px; color:#666;">
+        This is an automated email. Please do not reply to this message.
+      </div>
+
+    </div>
+  `,
+});
+
+    
     res.json({ success: true, message: "Doctor Added" });
   } catch (error) {
     console.log(error);
