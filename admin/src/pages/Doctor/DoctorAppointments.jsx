@@ -2,8 +2,10 @@ import React, { useContext, useEffect } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { AppContext } from "../../context/AppContext";
 import { assets } from "../../assets/assets";
+import { useNavigate } from 'react-router-dom';
 
 const DoctorAppointments = () => {
+  const navigate=useNavigate();
   const {
     dToken,
     appointments,
@@ -25,11 +27,10 @@ const DoctorAppointments = () => {
       <p className="mb-3 text-lg font-medium">All Appointments</p>
 
       <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[50vh]   ">
-        <div className="max-sm:hidden grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 py-3 px-6 border-b">
+        <div className="max-sm:hidden grid grid-cols-[0.5fr_2fr_1fr_3fr_1fr_2fr] gap-1 py-3 px-6 border-b">
           <p>#</p>
           <p>Patient</p>
           <p>Payment</p>
-          <p>Age</p>
           <p>Date & Time</p>
           <p>Fees</p>
           <p>Action</p>
@@ -37,7 +38,7 @@ const DoctorAppointments = () => {
 
         {appointments.reverse().map((item, index) => (
           <div
-            className="flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50"
+            className="flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_3fr_1fr_2fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50"
             key={index}
           >
             <p className="max-sm:hidden">{index + 1}</p>
@@ -51,10 +52,9 @@ const DoctorAppointments = () => {
             </div>
             <div>
               <p className="text-xs inline border border-primary px-2 rounded-full">
-                {item.payment ? "Onlone" : "CASH"}
+                {item.payment ? "Online" : "CASH"}
               </p>
             </div>
-            <p className="max-sm:hidden">{calculateAge(item.userData.dob)}</p>
             <p>
               {slotDateFormat(item.slotDate)}, {item.slotTime}
             </p>
@@ -63,23 +63,14 @@ const DoctorAppointments = () => {
               {item.amount}
             </p>
             {item.cancelled ? (
-              <p className="text-red-400 text-xs font-medium">Cancelled</p>
+              <p className="text-red-400 text-xs font-bold">Cancelled</p>
             ) : item.isCompleted ? (
-              <p className="text-green-500 text-xs font-medium">Completed</p>
+              <p className="text-green-500 text-xs font-bold">Completed</p>
             ) : (
-              <div className="flex">
-                <img
-                  onClick={() => cancelAppointment(item._id)}
-                  className="w-10 cursor-pointer"
-                  src={assets.cancel_icon}
-                  alt=""
-                />
-                <img
-                  onClick={() => completeAppointment(item._id)}
-                  className="w-10 cursor-pointer"
-                  src={assets.tick_icon}
-                  alt=""
-                />
+              <div className="flex justify-end gap-3.5">
+                <button  className="bg-red-700 px-2 py-1 rounded-lg text-white font-bold cursor-pointer text-xs" onClick={() => cancelAppointment(item._id)}>Cancel</button>
+                  <button  className="bg-green-500 px-2 py-1 rounded-lg text-white font-bold cursor-pointer text-xs" onClick={() => completeAppointment(item._id)}>Complete</button>
+                  <button className="bg-blue-700 px-2 py-1 rounded-lg text-white font-bold cursor-pointer text-xs" onClick={()=>navigate(`/prescription/${item._id}`)}>Precription</button>
               </div>
             )}
           </div>

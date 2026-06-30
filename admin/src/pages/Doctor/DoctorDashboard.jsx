@@ -2,8 +2,11 @@ import React, { useContext, useEffect } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
+import { useNavigate } from 'react-router-dom';
+
 
 const DoctorDashboard = () => {
+  const navigate=useNavigate();
   const {
     dToken,
     dashData,
@@ -64,7 +67,7 @@ const DoctorDashboard = () => {
           <div className="pt-4 border border-t-0">
             {dashData.latestAppointments.map((item, index) => (
               <div
-                className="flex items-center px-6 py-3 hover:bg-gray-100"
+                className="flex items-center gap-4 px-6 py-3 hover:bg-gray-100"
                 key={index}
               >
                 <img
@@ -83,23 +86,12 @@ const DoctorDashboard = () => {
                 {item.cancelled ? (
                   <p className="text-red-400 text-xs font-medium">Cancelled</p>
                 ) : item.isCompleted ? (
-                  <p className="text-green-500 text-xs font-medium">
+                  <p className="text-green-500 font-semibold text-sm">
                     Completed
                   </p>
                 ) : (
-                  <div className="flex">
-                    <img
-                      onClick={() => cancelAppointment(item._id)}
-                      className="w-10 cursor-pointer"
-                      src={assets.cancel_icon}
-                      alt=""
-                    />
-                    <img
-                      onClick={() => completeAppointment(item._id)}
-                      className="w-10 cursor-pointer"
-                      src={assets.tick_icon}
-                      alt=""
-                    />
+                  <div className="flex gap-10">
+                  <button  className="bg-blue-700 px-3 py-1 rounded-lg text-white cursor-pointer" onClick={() => navigate("/doctor-appointments")}>Review</button>
                   </div>
                 )}
               </div>
