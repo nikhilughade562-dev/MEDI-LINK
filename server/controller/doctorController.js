@@ -1,8 +1,10 @@
 const doctorModel=require('../models/doctorModel.js');
 const dotenv=require('dotenv').config()
-const bycrypt=require('bcrypt');
+const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
-const appointmentModel=require('../models/appointmentModel.js')
+const appointmentModel=require('../models/appointmentModel.js');
+const cloudinary=require('cloudinary');
+
 
 //get all doctor
 const doctorList = async (req, res) => {
@@ -27,7 +29,7 @@ const loginDoctor = async (req, res) => {
       return res.json({ success: false, message: "Invalid credentials" });
     }
 
-    const isMatch = await bycrypt.compare(password, doctor.password);
+    const isMatch = await bcrypt.compare(password, doctor.password);
 
     if (isMatch) {
       const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET);
@@ -48,7 +50,6 @@ const doctorProfile = async (req, res) => {
   try {
     const docId  = req.docId;
     const profileData = await doctorModel.findById(docId).select("-password");
-    console.log(profileData)
     res.json({ success: true, profileData });
   } catch (error) {
     console.log(error);
@@ -180,6 +181,34 @@ const appointmentCancel = async (req, res) => {
   }
 };
 
+const uploadPrescription=async(req,res)=>{
+  try {
+    const {appointmentId}=req.body;
+    const pdfFile=req.file;
+
+    if (!appointmentId) {
+      return res.json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+    const pdfUpload=await cloudinary.uploader.upload(pdfFile.path,{resource_type:"raw",});
+
+    const pdfUrl=pdfUpload.secure_url;
+
+    const appointment = await appointmentModel.findByIdAndUpdate(
+            appointmentId,
+            { prescription: pdfUrl},
+            { new: true }
+    );
+
+    return res.json({ success: true, message: "Appointment Uploaded Successfully" });
+    
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+}
+
 module.exports={
     changeAvailability,
     doctorList,
@@ -189,5 +218,6 @@ module.exports={
     doctorDashboard,
     appointmentComplete,
     appointmentsDoctor,
-    appointmentCancel
+    appointmentCancel,
+    uploadPrescription,
 }
