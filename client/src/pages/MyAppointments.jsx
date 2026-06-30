@@ -66,6 +66,10 @@ const MyAppointments = () => {
     }
   };
 
+  const handleViewPrescription=(url)=>{
+    window.open(url, "_blank");
+  }
+
   useEffect(() => {
     if (token) {
       getUserAppointments();
@@ -108,7 +112,7 @@ const MyAppointments = () => {
             <div></div>
             <div className="flex flex-col gap-2 justify-end">
               {!item.cancelled && !item.isCompleted && (
-                <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">
+                <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-blue-700 hover:text-white transition-all duration-300">
                   Pay Online
                 </button>
               )}
@@ -126,7 +130,12 @@ const MyAppointments = () => {
                 </button>
               )}
               {item.isCompleted && (
-                <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
+                <button onClick={handleViewPrescription(item.prescription)} className="sm:min-w-48 py-2 border border-green-500 hover:bg-green-100 rounded font-semibold text-green-500">
+                  View Prescription
+                </button>
+              )}
+              {item.isCompleted && (
+                <button className="sm:min-w-48 py-2 border font-semibold border-green-500 rounded text-green-500">
                   Completed
                 </button>
               )}
