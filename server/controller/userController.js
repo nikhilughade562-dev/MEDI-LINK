@@ -7,6 +7,7 @@ const validator = require("validator");
 const dotenv = require("dotenv").config();
 const appointmentModel = require("../models/appointmentModel.js");
 const transporter = require("../config/mailer.js");
+const razorpay = require("razorpay");
 
 //API for user registration
 const registerUser = async (req, res) => {
@@ -361,6 +362,60 @@ const listAppointment = async (req, res) => {
   }
 };
 
+const razorpayInstance = new razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+// Api to make payement for appoitment using razorpay
+const paymentRazorpay = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.json({
+        sucess: false,
+        message: "Appointment Cancelled or Not Found",
+      });
+    }
+
+    // creating option for razor pay
+    const options = {
+      amount: appointmentData.amount * 100,
+      currency: process.env.CURRENCY,
+      receipt: appointmentId,
+    };
+
+    // creating order for razor pay
+    const order = await razorpayInstance.orders.create(options);
+    res.json({ success: true, order });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// c
+const verifyRazorpay=async (req,res)=>{
+    try {
+      const {razorpay_order_id}=req.body;
+      const orderInfo=await razorpayInstance.orders.fetch(razorpay_order_id);
+
+      if(orderInfo.status=='paid'){
+         await appointmentModel.findByIdAndUpdate(orderInfo.receipt,{payment:true})
+         res.json({success:true,message:"Payment Successful"});
+      }
+      else{
+        res.json({success:true,message:"Payment Failed"});
+      }
+
+    } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -369,4 +424,6 @@ module.exports = {
   bookAppointment,
   listAppointment,
   cancelAppointment,
+  paymentRazorpay,
+  verifyRazorpay
 };
