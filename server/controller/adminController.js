@@ -194,7 +194,6 @@ const allDoctors = async (req, res) => {
 const appointmentsAdmin = async (req, res) => {
   try {
     const appointments = await appointmentModel.find({});
-    console.log(appointments)
     res.json({ success: true, appointments });
     
   } catch (error) {

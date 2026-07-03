@@ -22,7 +22,6 @@ const AdminContextProvider = (props) => {
       );
       if (data.success) {
         setDoctors(data.doctors);
-        console.log(data.doctors);
       } else {
         toast.error(data.message);
       }
@@ -39,7 +38,6 @@ const AdminContextProvider = (props) => {
 
       if (data.success) {
         setAppointments(data.appointments);
-        console.log(data.appointments);
       } else {
         toast.error(data.message);
       }
@@ -57,7 +55,6 @@ const AdminContextProvider = (props) => {
 
       if (data.success) {
         setDashData(data.dashData);
-        console.log(data.dashData);
       } else {
         toast.error(data.message);
       }

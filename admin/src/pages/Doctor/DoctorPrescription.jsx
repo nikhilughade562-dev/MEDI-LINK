@@ -82,7 +82,7 @@ const DoctorPrescription = () => {
     if (!element) return;
 
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 1,
       useCORS: true,
       backgroundColor: "#ffffff",
     });

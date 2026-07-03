@@ -173,7 +173,7 @@ const MyAppointments = () => {
                 </button>
               )}
               {item.isCompleted && (
-                <button onClick={handleViewPrescription(item.prescription)} className="sm:min-w-48 py-2 border border-green-500 hover:bg-green-100 rounded font-semibold text-green-500">
+                <button onClick={()=>handleViewPrescription(item.prescription)} className="sm:min-w-48 py-2 border border-green-500 hover:bg-green-100 rounded font-semibold text-green-500">
                   View Prescription
                 </button>
               )}

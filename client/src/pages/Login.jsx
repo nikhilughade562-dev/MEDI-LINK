@@ -25,7 +25,6 @@ const Login = () => {
           password,
         });
         if(data.success){
-          console.log("Frontend -> ",data.token)
           localStorage.setItem("token",data.token);
           setToken(data.token);
           navigate("/");
