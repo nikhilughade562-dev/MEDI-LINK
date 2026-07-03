@@ -1,7 +1,7 @@
 
 # Medi-Link - Doctor Appointment Web App
 
-**Medi-Link** is a full-stack web application designed to make healthcare more accessible by simplifying the process of booking doctor appointments. It offers three Dashboard: **Patient**, **Doctor**, and **Admin**, each with distinct features tailored to their roles. Built using the **MERN stack** (MongoDB, Express.js, React.js, and Node.js), **Medi-Link** provides an efficient, user-friendly experience for both patients and healthcare providers.
+**Medi-Link** is a full-stack healthcare web application built with the **MERN stack** (MongoDB, Express.js, React.js, and Node.js) to simplify doctor appointment management. The platform features three dedicated dashboards—**Patient**, **Doctor**, and **Admin**—each designed with role-specific functionalities. Patients can book appointments, make secure online payments, and access digital prescriptions, while doctors can efficiently manage appointments and generate downloadable digital prescriptions. With secure authentication, cloud storage integration, and a responsive user interface, **Medi-Link** delivers a seamless and modern healthcare experience.
 
 ## 🛠️ Tech Stack
 
@@ -9,6 +9,7 @@
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB Atlas
 - **Authentication**: JSON Web Token (JWT)
+- **Payment Gateway**: RazorPay
 
 ## 🔑 Key Features
 
@@ -27,6 +28,10 @@
 - 👤 **User Profile Management** with editable personal details and profile picture upload.
 
 - 📊 **Admin Analytics Dashboard** showing total doctors, patients, appointments, earnings, and recent bookings.
+
+- 💳 **Integrated Razorpay payment** gateway for secure and seamless online appointment payments.
+
+- 📄 **Digital prescriptions** doctors can create, preview, and securely upload digital prescriptions that patients can download anytime.
 
 ---
 
@@ -88,12 +93,16 @@ CLOUDINARY_SECRET_KEY=your_secret_key
 JWT_SECRET=your_jwt_secret
 ADMIN_EMAIL=Admin_email
 ADMIN_PASSWORD=Admin_password
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret_key
+CURRENCY="INR"
 ```
 
 Create a `.env` file in the root directory of the `client and Admin` folder and add the following:
 
 ```env
 VITE_BACKEND_URL=http://localhost:5000
+VITE_RAZORPAY_KEY_ID=your_razorpay_key
 ```
 
 ## 👨‍💻 Author
