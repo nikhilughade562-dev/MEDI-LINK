@@ -1,6 +1,6 @@
 import React, { useRef, useState,useContext, useEffect } from "react";
 import PrescriptionForm from "./PrescriptionForm";
-import PrescriptionPDF from "./PrescriptionPDF";
+import PrescriptionPDF from "./PrescriptionPdf";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
