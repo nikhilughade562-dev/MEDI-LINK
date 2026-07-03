@@ -171,14 +171,12 @@ const bookAppointment = async (req, res) => {
     await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
     //sending appointment confimation mail to user email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-
-      to: userData.email,
-
-      subject: "MEDILINK - Appointment Confirmation",
-
-      html: `
+    await transporter
+  .sendMail({
+    from: process.env.EMAIL_USER,
+    to: userData.email,
+    subject: "MEDILINK - Appointment Confirmation",
+    html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden;">
       
       <div style="background-color: #2563eb; color: white; padding: 20px; text-align: center;">
@@ -236,9 +234,19 @@ const bookAppointment = async (req, res) => {
 
     </div>
   `,
-    });
+  })
+  .then(() => {
+    console.log("Appointment email sent");
+  })
+  .catch((err) => {
+    console.log("Email failed:", err.message);
+  });
 
-    res.json({ success: true, message: "Appointment Booked" });
+return res.json({
+  success: true,
+  message: "Appointment Booked Successfully",
+});
+    
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
