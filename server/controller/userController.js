@@ -258,7 +258,7 @@ const cancelAppointment = async (req, res) => {
   try {
     const userId = req.userId;
     const { appointmentId } = req.body;
-
+    const userData = await userModel.findById(userId).select("-password");
     const appointmentData = await appointmentModel.findById(appointmentId);
 
     // verify appointment user
@@ -306,7 +306,7 @@ const cancelAppointment = async (req, res) => {
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr>
             <td style="padding: 10px; font-weight: bold;"> Doctor</td>
-            <td style="padding: 10px;">${docData.name}</td>
+            <td style="padding: 10px;">${doctorData.name}</td>
           </tr>
 
           <tr style="background-color: #f8f8f8;">
@@ -321,7 +321,7 @@ const cancelAppointment = async (req, res) => {
 
           <tr style="background-color: #f8f8f8;">
             <td style="padding: 10px; font-weight: bold;"> Consultation Fee</td>
-            <td style="padding: 10px;">$${docData.fees}</td>
+            <td style="padding: 10px;">$${doctorData.fees}</td>
           </tr>
         </table>
 
