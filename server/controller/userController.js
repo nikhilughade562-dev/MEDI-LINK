@@ -6,7 +6,6 @@ const cloudinary = require("cloudinary");
 const validator = require("validator");
 const dotenv = require("dotenv").config();
 const appointmentModel = require("../models/appointmentModel.js");
-const transporter = require("../config/mailer.js");
 const razorpay = require("razorpay");
 
 //API for user registration
@@ -170,79 +169,7 @@ const bookAppointment = async (req, res) => {
     // save new slots data in docData
     await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
-    //sending appointment confimation mail to user email
-    await transporter
-  .sendMail({
-    from: process.env.EMAIL_USER,
-    to: userData.email,
-    subject: "MEDILINK - Appointment Confirmation",
-    html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden;">
-      
-      <div style="background-color: #2563eb; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0;">MEDILINK</h1>
-      </div>
-
-      <div style="padding: 30px; color: #333;">
-        <h2>Hello ${userData.name},</h2>
-
-        <p>
-          Your appointment has been <strong>successfully booked</strong>. Here are your appointment details:
-        </p>
-
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr>
-            <td style="padding: 10px; font-weight: bold;"> Doctor</td>
-            <td style="padding: 10px;">Dr. ${docData.name}</td>
-          </tr>
-
-          <tr style="background-color: #f8f8f8;">
-            <td style="padding: 10px; font-weight: bold;"> Date</td>
-            <td style="padding: 10px;">${slotDate}</td>
-          </tr>
-
-          <tr>
-            <td style="padding: 10px; font-weight: bold;"> Time</td>
-            <td style="padding: 10px;">${slotTime}</td>
-          </tr>
-
-          <tr style="background-color: #f8f8f8;">
-            <td style="padding: 10px; font-weight: bold;"> Consultation Fee</td>
-            <td style="padding: 10px;">₹${docData.fees}</td>
-          </tr>
-        </table>
-
-        <p>
-          Please arrive <strong>10-15 minutes before</strong> your scheduled appointment.
-        </p>
-
-        <p>
-          Thank you for choosing <strong>MEDILINK</strong>. We wish you good health!
-        </p>
-
-        <br>
-
-        <p>
-          Regards,<br>
-          <strong>Team MEDILINK</strong>
-        </p>
-      </div>
-
-      <div style="background-color: #f3f4f6; text-align: center; padding: 15px; font-size: 12px; color: #666;">
-        This is an automated email. Please do not reply to this message.
-      </div>
-
-    </div>
-  `,
-  })
-  .then(() => {
-    console.log("Appointment email sent");
-  })
-  .catch((err) => {
-    console.log("Email failed:", err.message);
-  });
-
-return res.json({
+  res.json({
   success: true,
   message: "Appointment Booked Successfully",
 });
@@ -258,13 +185,50 @@ const cancelAppointment = async (req, res) => {
   try {
     const userId = req.userId;
     const { appointmentId } = req.body;
-    const userData = await userModel.findById(userId).select("-password");
     const appointmentData = await appointmentModel.findById(appointmentId);
 
+     if (appointmentData.cancelled) {
+    return res.json({
+        success: false,
+        message: "Appointment already cancelled"
+    });
+  }
+
     // verify appointment user
-    if (appointmentData.userId !== userId) {
+    if (String(appointmentData.userId) !== String(userId)) {
       return res.json({ success: false, message: "Unauthorized action" });
     }
+
+
+    let refundData = null;
+        if (appointmentData.payment) {
+
+            // Check payment ID exists
+            if (!appointmentData.razorpayPaymentId) {
+
+                return res.json({
+                    success: false,
+                    message: "Payment ID not found"
+                });
+            }
+
+            refundData =
+                await razorpayInstance.payments.refund(
+                    appointmentData.razorpayPaymentId,
+                    {
+                        amount: appointmentData.amount * 100
+                    }
+                );
+
+            await appointmentModel.findByIdAndUpdate(
+                appointmentId,
+                {
+                    refundId: refundData.id,
+                    refundStatus: refundData.status
+                }
+            );
+        }
+
 
     await appointmentModel.findByIdAndUpdate(appointmentId, {
       cancelled: true,
@@ -283,74 +247,7 @@ const cancelAppointment = async (req, res) => {
 
     await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
-    //sending appointment confimation mail to user email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-
-      to: userData.email,
-
-      subject: "MEDILINK - Appointment Cancellation",
-
-      html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden;">
-      
-      <div style="background-color: #2563eb; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0;">MEDILINK</h1>
-      </div>
-
-      <div style="padding: 30px; color: #333;">
-        <h2>Hello ${userData.name},</h2>
-
-        <p>Below are the details of the cancelled appointment:</p>
-
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <tr>
-            <td style="padding: 10px; font-weight: bold;"> Doctor</td>
-            <td style="padding: 10px;">${doctorData.name}</td>
-          </tr>
-
-          <tr style="background-color: #f8f8f8;">
-            <td style="padding: 10px; font-weight: bold;"> Date</td>
-            <td style="padding: 10px;">${slotDate}</td>
-          </tr>
-
-          <tr>
-            <td style="padding: 10px; font-weight: bold;"> Time</td>
-            <td style="padding: 10px;">${slotTime}</td>
-          </tr>
-
-          <tr style="background-color: #f8f8f8;">
-            <td style="padding: 10px; font-weight: bold;"> Consultation Fee</td>
-            <td style="padding: 10px;">$${doctorData.fees}</td>
-          </tr>
-        </table>
-
-       <p>
-          If this cancellation was made by mistake or you'd like to book another appointment,
-          you can do so anytime through <strong>MEDILINK</strong>.
-        </p>
-
-        <p>
-          We look forward to serving you in the future.
-        </p>
-
-        <br>
-
-        <p>
-          Regards,<br>
-          <strong>Team MEDILINK</strong>
-        </p>
-      </div>
-
-      <div style="background-color: #f3f4f6; text-align: center; padding: 15px; font-size: 12px; color: #666;">
-        This is an automated email. Please do not reply to this message.
-      </div>
-
-    </div>
-  `,
-    });
-
-    res.json({ success: true, message: "Appointment Cancelled" });
+    res.json({ success: true, message: "Appointment Cancelled and Refund Within 5-7 days" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -383,14 +280,13 @@ const paymentRazorpay = async (req, res) => {
 
     if (!appointmentData || appointmentData.cancelled) {
       return res.json({
-        sucess: false,
+        success: false,
         message: "Appointment Cancelled or Not Found",
       });
     }
-
     // creating option for razor pay
     const options = {
-      amount: appointmentData.amount * 100,
+      amount: appointmentData.amount*100,
       currency: process.env.CURRENCY,
       receipt: appointmentId,
     };
@@ -404,18 +300,17 @@ const paymentRazorpay = async (req, res) => {
   }
 };
 
-// c
 const verifyRazorpay=async (req,res)=>{
     try {
-      const {razorpay_order_id}=req.body;
+      const {razorpay_order_id,razorpay_payment_id}=req.body;
       const orderInfo=await razorpayInstance.orders.fetch(razorpay_order_id);
 
       if(orderInfo.status=='paid'){
-         await appointmentModel.findByIdAndUpdate(orderInfo.receipt,{payment:true})
+         await appointmentModel.findByIdAndUpdate(orderInfo.receipt,{payment:true,razorpayPaymentId: razorpay_payment_id})
          res.json({success:true,message:"Payment Successful"});
       }
       else{
-        res.json({success:true,message:"Payment Failed"});
+        res.json({success:false,message:"Payment Failed"});
       }
 
     } catch (error) {

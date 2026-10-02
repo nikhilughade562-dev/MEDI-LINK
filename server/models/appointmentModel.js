@@ -13,6 +13,9 @@ const appointmentSchema = new mongoose.Schema({
   payment: { type: Boolean, default: false },
   isCompleted: { type: Boolean, default: false },
   prescription: { type: String, default:"" },
+  razorpayPaymentId: {type: String,default: ""},
+  refundId: {type: String,default: ""},
+  refundStatus: {type: String,default: ""}
 });
 
 const appointmentModel =mongoose.model("appointment", appointmentSchema);

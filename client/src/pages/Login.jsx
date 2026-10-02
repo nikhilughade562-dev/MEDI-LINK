@@ -41,7 +41,7 @@ const Login = () => {
         });
         if(data.success){
           localStorage.setItem("token",data.token);
-          setToken(data.toekn);
+          setToken(data.token);
           navigate("/");
         }
         else{
